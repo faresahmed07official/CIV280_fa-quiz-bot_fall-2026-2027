@@ -1,0 +1,2254 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>𝙁𝘼ᵀᴹ_CIV280_BOT</title>
+<style>
+  /* =========================================================
+     THEME TOKENS
+  ========================================================= */
+  :root{
+    --bg: #f4f6fb;
+    --surface: #ffffff;
+    --surface-2: #eef1f8;
+    --border: #dde2ee;
+    --text: #1c2333;
+    --text-soft: #5a637a;
+    --text-faint: #8992a8;
+    --primary: #3949ab;
+    --primary-ink: #ffffff;
+    --primary-soft: #e7e9fb;
+    --accent: #0f9d8f;
+    --accent-soft: #dcf5f1;
+    --danger: #d64545;
+    --danger-soft: #fbe4e4;
+    --warn: #c98a1e;
+    --radius-lg: 18px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 2px rgba(28,35,51,.04), 0 8px 24px -8px rgba(28,35,51,.12);
+    --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", system-ui, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", system-ui, sans-serif;
+  }
+  [data-theme="dark"]{
+    --bg: #10141f;
+    --surface: #181e2c;
+    --surface-2: #1f2637;
+    --border: #2b3346;
+    --text: #e7ebf6;
+    --text-soft: #a3adc6;
+    --text-faint: #6d7791;
+    --primary: #7c8ef0;
+    --primary-ink: #10141f;
+    --primary-soft: #262d47;
+    --accent: #3fd8c4;
+    --accent-soft: #17332f;
+    --danger: #f27979;
+    --danger-soft: #3a1f22;
+    --warn: #e0ac48;
+    --shadow: 0 1px 2px rgba(0,0,0,.2), 0 12px 28px -10px rgba(0,0,0,.55);
+  }
+
+  *,*::before,*::after{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-bottom: env(safe-area-inset-bottom);
+    transition: background .25s ease, color .25s ease;
+  }
+  h1,h2,h3{ font-family: var(--font-display); margin:0; letter-spacing:-0.01em; }
+  p{ margin:0; }
+  button{ font-family: inherit; }
+  input, select, textarea { font-family: inherit; }
+
+  .app-shell{ max-width: 760px; margin: 0 auto; padding: 0 18px 40px; }
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 18px 0 14px;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; min-width:0; }
+  .brand-logo{
+    min-width:58px; height:38px; padding:0 7px; box-sizing:border-box;
+    border-radius:10px; background:var(--primary); color:var(--primary-ink);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:13px; white-space:nowrap; flex-shrink:0; overflow:hidden;
+  }
+  .brand-logo img{ width:100%; height:100%; object-fit:cover; }
+  .brand-name{ font-weight:700; font-size:17px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  .theme-toggle{
+    display:flex; align-items:center; justify-content:center;
+    width:42px; height:42px; border-radius:50%;
+    border:1px solid var(--border); background: var(--surface);
+    color: var(--text); cursor:pointer; flex-shrink:0;
+    box-shadow: var(--shadow);
+  }
+  .theme-toggle:active{ transform: scale(.94); }
+
+  /* ---------- Cards / surfaces ---------- */
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 20px;
+  }
+  .card + .card{ margin-top: 16px; }
+  .section-title{ font-size: 13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color: var(--text-soft); margin-bottom:10px; }
+  .hint{ font-size:13px; color: var(--text-faint); margin-top:6px; }
+
+  /* ---------- Home screen ---------- */
+  .hero{ text-align:center; padding: 8px 4px 4px; }
+  .hero h1{ font-size: 26px; }
+  .hero p{
+    color: var(--text-soft);
+    margin-top:6px;
+    font-size:14.5px;
+    white-space: pre-line;
+}
+  .bank-stat{
+    display:inline-flex; align-items:center; gap:8px; margin-top:14px;
+    background: var(--primary-soft); color: var(--primary);
+    padding:8px 14px; border-radius: 999px; font-weight:600; font-size:13.5px;
+  }
+
+  .option-grid{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{
+    border:1px solid var(--border); background: var(--surface-2);
+    color: var(--text); padding:10px 16px; border-radius: 999px;
+    font-size:14px; font-weight:600; cursor:pointer; user-select:none;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .chip.active{ background: var(--primary); border-color: var(--primary); color: var(--primary-ink); }
+  .chip:active{ transform: scale(.97); }
+
+  .custom-row{ display:flex; gap:8px; margin-top:10px; align-items:center; }
+  .num-input{
+    width:100%; padding:11px 14px; border-radius: var(--radius-md);
+    border:1px solid var(--border); background: var(--surface-2); color: var(--text);
+    font-size:15px;
+  }
+  .num-input:focus, select:focus{ outline: 2px solid var(--primary); outline-offset: 1px; }
+
+  .toggle-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 12px 2px;
+  }
+  .toggle-row + .toggle-row{ border-top: 1px solid var(--border); }
+  .toggle-label{ font-size:14.5px; font-weight:600; }
+  .toggle-sub{ font-size:12.5px; color: var(--text-faint); margin-top:2px; }
+
+  .switch{ position:relative; width:46px; height:27px; flex-shrink:0; }
+  .switch input{ opacity:0; width:100%; height:100%; margin:0; position:absolute; cursor:pointer; z-index:1; }
+  .switch .track{
+    position:absolute; inset:0; background: var(--border); border-radius:999px; transition:.2s;
+  }
+  .switch .thumb{
+    position:absolute; top:3px; left:3px; width:21px; height:21px; border-radius:50%;
+    background:#fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition:.2s;
+  }
+  .switch input:checked ~ .track{ background: var(--primary); }
+  .switch input:checked ~ .thumb{ transform: translateX(19px); }
+
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding: 13px 20px; border-radius: var(--radius-md); border:none;
+    font-weight:700; font-size:15px; cursor:pointer; width:100%;
+    transition: transform .1s ease, opacity .15s ease;
+  }
+  .btn:active{ transform: scale(.98); }
+  .btn-primary{ background: var(--primary); color: var(--primary-ink); }
+  .btn-secondary{ background: var(--surface-2); color: var(--text); border:1px solid var(--border); }
+  .btn-ghost{ background: transparent; color: var(--primary); }
+  .btn-danger-outline{ background: transparent; color: var(--danger); border:1px solid var(--danger); }
+  .btn[disabled]{ opacity:.5; cursor:not-allowed; }
+  .btn-row{ display:flex; gap:10px; }
+  .btn-row .btn{ flex:1; }
+
+  /* ---------- Search / Bank review ---------- */
+  .search-input-wrap{ position:relative; }
+  .search-input{
+    width:100%; padding: 12px 14px 12px 40px; border-radius: var(--radius-md);
+    border:1px solid var(--border); background: var(--surface-2); color: var(--text); font-size:15px;
+  }
+  .search-icon{ position:absolute; left:13px; top:50%; transform:translateY(-50%); color: var(--text-faint); }
+  .search-results{ margin-top:12px; max-height: 460px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; }
+  .bank-item{
+    border:1px solid var(--border); border-radius: var(--radius-md); padding:14px;
+    background: var(--surface-2);
+  }
+  .bank-item-header{ display:flex; align-items:flex-start; gap:10px; }
+  .question-number{
+    width:30px; min-width:30px; height:30px; flex:0 0 30px; margin-top:1px;
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--border); border-radius:9px;
+    background:var(--surface); color:var(--primary);
+    font-size:13px; line-height:1; font-weight:800;
+  }
+  .bank-item-text{ font-size:14px; font-weight:700; line-height:1.4; unicode-bidi: plaintext; }
+  .bank-item .options-list{ margin-top:10px; }
+  .bank-item .option-btn{ cursor:default; padding:10px 12px; font-size:13.5px; }
+  .search-empty{ text-align:center; color: var(--text-faint); font-size:13.5px; padding: 14px 0; }
+  .selected-bar{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-top:10px; font-size:13px; color: var(--text-soft);
+  }
+
+  /* ---------- Quiz screen ---------- */
+  .quiz-header{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom: 14px;
+  }
+  .q-counter{ font-size:13.5px; font-weight:700; color: var(--text-soft); }
+  .timer-pill{
+    display:flex; align-items:center; gap:6px; font-weight:700; font-size:14px;
+    background: var(--surface-2); border:1px solid var(--border); padding:7px 13px; border-radius:999px;
+  }
+  .timer-pill.low{ background: var(--danger-soft); color: var(--danger); border-color: transparent; }
+
+  .progress-track{ height:6px; background: var(--surface-2); border-radius:999px; overflow:hidden; margin-bottom:18px; }
+  .progress-fill{ height:100%; background: var(--primary); border-radius:999px; transition: width .25s ease; }
+
+  .question-text{ font-size:18px; font-weight:700; line-height:1.5; margin-bottom:18px; unicode-bidi: plaintext; }
+
+  .options-list{ display:flex; flex-direction:column; gap:10px; }
+  .option-btn{
+    display:flex; align-items:center; gap:12px; width:100%; text-align:left;
+    padding:14px 16px; border-radius: var(--radius-md); border:1.5px solid var(--border);
+    background: var(--surface-2); color: var(--text); font-size:15px; cursor:pointer;
+    unicode-bidi: plaintext;
+  }
+  .option-btn .letter{
+    flex-shrink:0; width:28px; height:28px; border-radius:50%; border:1.5px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; color: var(--text-soft);
+  }
+  .option-btn.selected{ border-color: var(--primary); background: var(--primary-soft); }
+  .option-btn.selected .letter{ background: var(--primary); border-color: var(--primary); color: var(--primary-ink); }
+  .option-btn:active{ transform: scale(.99); }
+  .option-btn:disabled{ cursor:default; }
+
+  .review-option.correct{ border-color: var(--accent); background: var(--accent-soft); }
+  .review-option.wrong{ border-color: var(--danger); background: var(--danger-soft); }
+  .review-tag{ margin-left:auto; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; flex-shrink:0; }
+  .review-tag.correct{ color: var(--accent); }
+  .review-tag.wrong{ color: var(--danger); }
+
+  .feedback-banner{
+    margin-top:14px; padding:12px 14px; border-radius: var(--radius-md);
+    font-weight:700; font-size:14px; line-height:1.4; unicode-bidi: plaintext;
+  }
+  .feedback-banner.correct{ background: var(--accent-soft); color: var(--accent); }
+  .feedback-banner.wrong{ background: var(--danger-soft); color: var(--danger); }
+
+  .nav-row{ display:flex; gap:10px; margin-top:20px; }
+  .nav-row .btn{ flex:1; }
+
+  .navigator{ display:flex; flex-wrap:wrap; gap:7px; margin-top:16px; }
+  .nav-dot{
+    width:34px; height:34px; border-radius:9px; border:1.5px solid var(--border);
+    background: var(--surface-2); color: var(--text-soft); font-size:12.5px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .nav-dot.answered{ background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
+  .nav-dot.current{ outline: 2px solid var(--primary); outline-offset:2px; }
+
+  /* ---------- Result screen ---------- */
+  .result-hero{ text-align:center; padding: 6px 4px 10px; }
+  .ring-wrap{ position:relative; width:168px; height:168px; margin: 6px auto 4px; }
+  .ring-score{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .ring-score .pct{ font-size:34px; font-weight:800; font-family: var(--font-display); }
+  .ring-score .lbl{ font-size:12.5px; color: var(--text-faint); font-weight:600; letter-spacing:.03em; }
+
+  .stat-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap:10px; margin-top:18px; }
+  .stat-box{ background: var(--surface-2); border-radius: var(--radius-md); padding:14px 8px; text-align:center; }
+  .stat-box .num{ font-size:20px; font-weight:800; }
+  .stat-box .lbl{ font-size:11.5px; color: var(--text-faint); margin-top:2px; font-weight:600; text-transform:uppercase; letter-spacing:.03em; }
+  .stat-box.correct .num{ color: var(--accent); }
+  .stat-box.wrong .num{ color: var(--danger); }
+  .stat-box.unanswered .num{ color: var(--warn); }
+
+  /* ---------- Footer ---------- */
+  .site-footer{ text-align:center; margin-top: 26px; padding: 10px 0 4px; }
+  .site-footer .author{ font-size:11.5px; color: var(--text-faint); letter-spacing:.02em; }
+  .site-footer .title{
+    font-size:10.5px;
+    color: var(--text-faint);
+    opacity:.75;
+    margin-top:2px;
+    white-space: pre-line;
+    line-height: 1.6;
+}
+
+  .screen{ display:none; }
+  .screen.active{ display:block; animation: fadeIn .2s ease; }
+  @keyframes fadeIn{ from{ opacity:0; transform: translateY(4px);} to{ opacity:1; transform:none; } }
+
+  .banner{
+    display:flex; align-items:center; gap:10px; background: var(--accent-soft); color: var(--accent);
+    border-radius: var(--radius-md); padding: 12px 14px; font-size:13.5px; font-weight:600; margin-bottom:14px;
+  }
+
+  @media (max-width: 420px){
+    .stat-grid{ gap:8px; }
+    .ring-wrap{ width:150px; height:150px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-logo" id="brandLogo">Q</div>
+      <div class="brand-name" id="brandName">Quiz Bot</div>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+      <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+    </button>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: HOME
+  ============================================================= -->
+  <div class="screen active" id="screen-home">
+
+    <div class="card hero">
+      <h1 id="homeTitle">Quiz Bot</h1>
+      <p id="homeSubtitle">Test your knowledge — set your options and start.</p>
+      <div class="bank-stat" id="bankStat">0 questions loaded</div>
+    </div>
+
+    <div id="resumeBanner" style="display:none" class="card">
+      <div class="banner" style="margin-bottom:10px;">You have an unfinished quiz in progress.</div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnResume">Resume Quiz</button>
+        <button class="btn btn-secondary" id="btnDiscardResume">Discard</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Question Sections</div>
+      <div class="option-grid" id="sectionChips"></div>
+      <p class="hint" id="sectionHint">Choose Full Bank or one or more sections. All questions in the selected sections will be included.</p>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Quiz Options</div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Shuffle Questions</div>
+          <div class="toggle-sub">Randomize question order each attempt</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="toggleShuffleQ"><span class="track"></span><span class="thumb"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Shuffle Answers</div>
+          <div class="toggle-sub">Randomize option order per question</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="toggleShuffleA"><span class="track"></span><span class="thumb"></span></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Quiz Timer</div>
+      <div class="option-grid" id="timerChips"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Question Bank Review</div>
+      <p class="hint" style="margin:-2px 0 12px;">Browse questions from the selected section(s), with the correct answer highlighted. Question numbering restarts from 1 whenever the visible section selection changes.</p>
+      <div class="search-input-wrap">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search by keyword…">
+      </div>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+
+    <button class="btn btn-primary" id="btnStart" style="margin-top:6px;">Start Quiz</button>
+
+    <div class="site-footer">
+      <div class="author" id="footerAuthor"></div>
+      <div class="title" id="footerTitle"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: QUIZ
+  ============================================================= -->
+  <div class="screen" id="screen-quiz">
+    <div class="card">
+      <div class="quiz-header">
+        <div class="q-counter" id="qCounter">Question 1 of 10</div>
+        <div class="timer-pill" id="timerPill" style="display:none">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          <span id="timerText">00:00</span>
+        </div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="question-text" id="questionText"></div>
+      <div class="options-list" id="optionsList"></div>
+      <div class="feedback-banner" id="feedbackBanner" style="display:none"></div>
+      <div class="nav-row">
+        <button class="btn btn-secondary" id="btnPrev">Previous</button>
+        <button class="btn btn-primary" id="btnNext">Next Question</button>
+      </div>
+      <div class="navigator" id="navigator"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: RESULT
+  ============================================================= -->
+  <div class="screen" id="screen-result">
+    <div class="card result-hero">
+      <h1>Quiz Completed!</h1>
+      <div class="ring-wrap">
+        <svg width="168" height="168" viewBox="0 0 168 168">
+          <circle cx="84" cy="84" r="74" fill="none" stroke="var(--surface-2)" stroke-width="14"/>
+          <circle id="ringProgress" cx="84" cy="84" r="74" fill="none" stroke="var(--primary)" stroke-width="14" stroke-linecap="round" stroke-dasharray="465" stroke-dashoffset="465" transform="rotate(-90 84 84)"/>
+        </svg>
+        <div class="ring-score">
+          <div class="pct" id="scorePct">0%</div>
+          <div class="lbl" id="scoreFrac">0 / 0</div>
+        </div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-box correct"><div class="num" id="statCorrect">0</div><div class="lbl">Correct</div></div>
+        <div class="stat-box wrong"><div class="num" id="statWrong">0</div><div class="lbl">Wrong</div></div>
+        <div class="stat-box unanswered"><div class="num" id="statUnanswered">0</div><div class="lbl">Unanswered</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="btnReview">Review Answers</button>
+        <button class="btn btn-primary" id="btnRetry">Retry Quiz</button>
+      </div>
+      <button class="btn btn-ghost" id="btnHome" style="margin-top:10px;">Back to Home</button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: REVIEW
+  ============================================================= -->
+  <div class="screen" id="screen-review">
+    <div class="card">
+      <h1 style="font-size:20px;margin-bottom:14px;">Review Answers</h1>
+      <div id="reviewList"></div>
+      <button class="btn btn-primary" id="btnBackToResult" style="margin-top:6px;">Back to Result</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* =====================================================================
+   SITE CONFIGURATION
+   Edit anything in this object to rebrand or reconfigure the site.
+   Nothing else in the code needs to change.
+===================================================================== */
+const SITE_CONFIG = {
+  siteName: "QUIZ BOT",
+  // Logo: put a short text (e.g. initials) OR an image URL below.
+  // If logoImageUrl is set (non-empty), it is used instead of logoText.
+  logoText: "𝙁𝘼ᵀᴹ",
+  logoImageUrl: "", // e.g. "https://yourdomain.com/logo.png" or a base64 data URI
+
+  authorName: "Powered by: Eng: Fares Ahmed Ramzy Helail",
+  authorTitle: 'ᴇɴɢ | "ɢᴇɴᴇʀᴀʟ - ᴍᴇᴄ" ʟᴇᴀᴅᴇʀ\n01201941328',
+
+  defaultTheme: "light", // "light" or "dark" (used only if user has no saved preference)
+
+  homeTitle: "𝙁𝘼ᵀᴹ_CIV280_BOT",
+  homeSubtitle: "Dr. Ibrahim Ahmed Ahmed Al Arabi\nFall 2026 - 2027",
+
+  // Options offered on the home screen
+  timerOptionsMinutes: [0, 5, 10, 15, 20, 30, 45, 60], // 0 = "No Timer"
+
+  // Defaults pre-selected on first load
+  defaultTimerMinutes: 0,
+  defaultShuffleQuestions: true,
+  defaultShuffleAnswers: false
+};
+
+/* =====================================================================
+   QUESTION BANK
+   -------------------------------------------------------------------
+   EDIT THIS SECTION ONLY to add or remove questions.
+   Nothing else in the code needs to change — the app automatically
+   adapts to any number of questions, and to any number of options.
+
+   FORMAT — plain text, easy to paste from Excel or type by hand:
+
+   Section: Fire Safety
+
+   Question 1:
+   Question text here?
+   A. First choice
+   B. Second choice
+   C. Third choice
+   D. Fourth choice
+   Answer: A
+
+   Question 2:
+   Second question text?
+   A. First choice
+   B. Second choice
+   Answer: B
+
+   RULES:
+   - Start each group with a line "Section: Section Name".
+   - All questions after a Section line belong to that section until another Section line appears.
+   - The app automatically creates the section buttons from the Section lines in the bank.
+   - Use "Full Bank" in the app to include every question.
+   - You can select one section or multiple sections at the same time.
+   - Start every question with a line "Question <number>:" (the number
+     itself is not used by the app — it's just a separator for you).
+   - Then the question text on the next line.
+   - Then one option per line, formatted as "A. text", "B. text", etc.
+   - You are NOT limited to four options — add "E.", "F." and so on if
+     a question needs more choices; the app renders however many you give it.
+   - For a True/False question, just give two options:
+       A. True
+       B. False
+   - If a question only has two real options, simply do not write a
+     "C." or "D." line at all — do not leave them empty. Any option line
+     left blank (e.g. "C.") is automatically ignored too, so nothing
+     ever shows an empty choice.
+   - End every question with "Answer: <letter>" matching one of the
+     option letters you used above.
+   - Leave a blank line between questions (optional, just for readability).
+
+   EXCEL WORKFLOW:
+   If your Excel sheet has columns Question | A | B | C | D | Answer,
+   build one text block per row following the pattern above (a simple
+   Excel formula with CONCAT/TEXTJOIN can generate this block per row),
+   then paste all the blocks below, one after another.
+===================================================================== */
+const QUESTION_BANK_TEXT = `
+Section: Quiz 1 | Fall 2026 - 2027
+Question 1:
+Which of the following is not an attribute of a project?
+A. Project is unique
+B. Projects are developed using progressive elaboration
+C. Projects have a primary customer or sponsor
+D. Projects involve little uncertainty
+E. 
+Answer: D
+
+Section: Quiz 1 | Fall 2026 - 2027
+Question 2:
+The basic nature of a project is a/an _____ one.
+A. temporary
+B. expensive
+C. permanent
+D. All the given
+E. 
+Answer: A
+
+Section: Quiz 1 | Fall 2026 - 2027
+Question 3:
+Something is always .............. each time the activities of a project are repeated.
+A. Different.
+B. None of the mentioned things.
+C. Same.
+D. Wrong
+E. 
+Answer: A
+
+Section: Quiz 1 | Fall 2026 - 2027
+Question 4:
+What are all projects constrained by?
+A. Initiating
+B. planning
+C. executing
+D. monitoring and controlling
+E. 
+Answer: D
+
+Section: Quiz 1 | Fall 2026 - 2027
+Question 5:
+Which of the following is not a part of the triple constraint of project management?
+A. Meeting communications goals
+B. Meeting cost goals
+C. Meeting scope goals
+D. Meeting time goals
+E. 
+Answer: A
+
+Section: Quiz 1 | Fall 2026 - 2027
+Question 6:
+Which of the following is an example of a project constraint?
+A. Assuming that all team members will be available for the entire project duration.
+B. A budget limit that restricts project spending.
+C. Believing that required technology will be available when needed.
+D. Estimating that project tasks will be completed on schedule.
+E. 
+Answer: B
+
+Section: Quiz 1 | Fall 2026 - 2027
+Question 7:
+Which of the following responsibilities are typically assigned to the engineer in a construction project?
+A. Contractor hiring, financing, and contract type selection
+B. Quality system, review plans, project design, and engineer estimate
+C. Labor management, construction techniques, and safety protocols
+D. Resource procurement, feasibility study, and project schedule
+E. 
+Answer: B
+
+Section: Quiz 1 | Fall 2026 - 2027
+Question 8:
+Which of the following responsibilities are typically assigned to the contractor in a construction project?
+A. Financing method, project organization, and quality management
+B. Review design, executing methods, cost estimating, and project schedule
+C. Project specifications, design requirements, and feasibility study
+D. Contractor selection, resource procurement, and contract type selection
+E. 
+Answer: B
+
+Section: Quiz 1 | Fall 2026 - 2027
+Question 9:
+Scope Time Cost
+A. Manager
+B. Program
+C. Project Management Tools and Techniques
+D. Triple Constraint
+E. 
+Answer: D
+
+Section: Quiz 1 | Fall 2026 - 2027
+Question 10:
+Which of the following are responsibilities typically assigned to the owner in a construction project?
+A. Budget management, contractor safety protocols, and contractor site supervision
+B. Feasibility study, financing method, contractor selection method, and quality management
+C. Design requirements, construction techniques, and labor scheduling
+D. Contractor hiring, construction site management, and subcontractor management
+E. 
+Answer: B
+
+Section: Quiz 1 | Fall 2026 - 2027
+Question 11:
+the application of knowledge, skills, tools, and techniques to project activites to meet project reqs
+A. program manager
+B. project
+C. project management
+D. Project Management office (PMO)
+E. 
+Answer: C
+
+Section: Quiz 1 | Fall 2026 - 2027
+Question 12:
+an international professional society for project managers
+A. enterprise project management software
+B. manager
+C. program manager
+D. Project management institute (PMI)
+E. 
+Answer: D
+
+Section: Quiz 1 | Fall 2026 - 2027
+Question 13:
+Project mgmt body of knowledge
+A. Pmbok
+B. PMI defines a project as?
+C. The first rule of PM?
+D. What are all projects constrained by?
+E. 
+Answer: A
+
+Section: Quiz 1 | Fall 2026 - 2027
+Question 14:
+Which of the following are not responsibilities of the owner under the provisions of the General Conditions?
+A. Provide access to the construction site.
+B. Make payments to the contractor
+C. Make payments to the subcontractors.
+D. Provide necessary copies of construction documents.
+E. 
+Answer: C
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 15:
+In which type of project delivery system does the contractor bear most of the risk?
+A. Design-Bid-Build
+B. Design-Build
+C. Lump Sum contract
+D. None of these systems
+E. 
+Answer: C
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 16:
+What is the primary objective of project risk management in project management?
+A. To analyze and lessen potential risks that could impact the project's success.
+B. To increase project costs to enhance quality and features.
+C. To streamline communication among team members and stakeholders.
+D. To manage project schedules and ensure timely delivery of deliverables.
+E. 
+Answer: A
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 17:
+Which of the following best describes the "Project Life Cycle"?
+A. A sequence of phases that a project goes through from initiation to closure.
+B. A method for determining project scope.
+C. A document used to manage project resources.
+D. A tool to estimate project costs.
+E. 
+Answer: A
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 18:
+What does PLC stand for?
+A. Program life cycle
+B. Program loss closure
+C. Project life cycle
+D. Project loss chain
+E. 
+Answer: C
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 19:
+The DB is the fastest system to deliver a project.
+A. TRUE
+B. FALSE
+C. 
+D. 
+E. 
+Answer: A
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 20:
+Which phase in the Project Life Cycle emphasizes learning from project experiences to improve future projects?
+A. Planning
+B. Execution
+C. Closure
+D. Initiation
+E. 
+Answer: C
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 21:
+What is the primary purpose of project procurement management in project management?
+A. To develop marketing strategies for project deliverables.
+B. To obtain necessary resources from external sources to fulfill project requirements.
+C. To manage team dynamics and enhance collaboration among project personnel.
+D. To monitor and control project budgets and financial performance.
+E. 
+Answer: B
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 22:
+Which is typically the first phase in the Project Life Cycle?
+A. Execution
+B. Planning
+C. Initiation
+D. Closure
+E. 
+Answer: C
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 23:
+What is the primary objective of project human resource management in project management?
+A. To develop and effectively employ project personnel to ensure successful project execution.
+B. To establish strict control over project costs and budgets.
+C. To analyze market trends and customer feedback for project improvement.
+D. To create comprehensive marketing strategies for project deliverables.
+E. 
+Answer: A
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 24:
+DBOM stands for
+A. Design-Bid.Operate and Maintain.
+B. Design-Bond-Original-Materials.
+C. Design-Build.Operate and Maintain.
+D. None of the given choices.
+E. 
+Answer: C
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 25:
+In a DBB project delivery system, the owner enters into a contract with a single entity to provide the design and to construct the project according to that design.
+A. TRUE
+B. FALSE
+C. 
+D. 
+E. 
+Answer: B
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 26:
+Which phase of the project life cycle needs the most resources?
+A. Evaluation
+B. Executing
+C. Initiating
+D. Planning
+E. 
+Answer: B
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 27:
+In which type of project delivery system does the owner bear most of the risk?
+A. Design-Bid-Build.
+B. Design-Build.
+C. Lump Sum contract
+D. None of these systems
+E. 
+Answer: B
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 28:
+The disadvantages of DBB system are: - No price transparency, - No price competition, - No risk price, - Motivations time and cost (not quality), and - No client advocate.
+A. TRUE
+B. FALSE
+C. 
+D. 
+E. 
+Answer: B
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 29:
+The disadvantages of DB system are: - No price transparency, - No price competition, - No risk price, - Motivations time and cost (not quality), and - No client advocate.
+A. TRUE
+B. FALSE
+C. 
+D. 
+E. 
+Answer: A
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 30:
+Which of the following best describes the "Closure" phase of the Project Life Cycle?
+A. The phase where the project is initiated.
+B. The phase where the project scope is defined.
+C. The phase where deliverables are formally accepted, and resources are released.
+D. The phase where project resources are acquired.
+E. 
+Answer: C
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 31:
+The DBB is the fastest system to deliver a project.
+A. TRUE
+B. FALSE
+C. 
+D. 
+E. 
+Answer: B
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 32:
+Disadvantages of DBB approach
+A. Additional Admin for architect needed
+B. co-ordination more difficult
+C. less cost competitive
+D. Slower due to the bid process
+E. 
+Answer: D
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 33:
+What is the primary purpose of the monitoring and control phase in the project life cycle?
+A. To finalize the project and deliver the outcomes
+B. To execute the project tasks
+C. To plan the project schedule and resources
+D. To ensure the project stays on track and aligns with objectives
+E. 
+Answer: D
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 34:
+What is the primary purpose of project integration management in project management?
+A. To isolate each project component to enhance individual performance.
+B. To ensure that the various project elements are effectively coordinated to achieve project objectives.
+C. To focus solely on risk management and mitigation strategies.
+D. To develop marketing strategies for the project deliverables.
+E. 
+Answer: B
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 35:
+Why is it important to understand your Stakeholders?
+A. They can be a positive or negative influence on the project
+B. They may have different technical backgrounds
+C. They may not care about the project
+D. They may work in a different department or company
+E. 
+Answer: A
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 36:
+Why does the cost tend to decrease in the Closure phase of a Project Life Cycle?
+A. Because most of the deliverables are completed, and staffing levels are reduced.
+B. Because new resources are added in the Closure phase.
+C. Because project planning activities are finalized.
+D. Because the project's scope expands in this phase.
+E. 
+Answer: A
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 37:
+What are the stages of the Project Life Cycle?
+A. Initiating, Execution and Closing
+B. Initiating, Planning, Execution and Closing
+C. Analysis, Planning, Execution and Closing
+D. Planning, Execution and Closing
+E. 
+Answer: B
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 38:
+How can stakeholders influence a project?
+A. Stakeholders are only involved if they provide funding for the project.
+B. Stakeholders may be actively involved in the project or have interests that may be positively or negatively affected by the performance or completion of the project.
+C. Stakeholders have no influence unless they are part of the project management team.
+D. Stakeholders can only impact a project through formal reviews and evaluations.
+E. 
+Answer: B
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 39:
+What is the primary purpose of project communications management in project management?
+A. To ensure effective internal and external communications among stakeholders to facilitate project success.
+B. To manage project budgets and financial resources effectively.
+C. To develop marketing campaigns for the project deliverables.
+D. To minimize the time spent in meetings and discussions among team members.
+E. 
+Answer: A
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 40:
+Which phase of the Project Life Cycle includes risk identification and analysis to prepare for uncertainties?
+A. Planning
+B. Initiation
+C. Closure
+D. Execution
+E. 
+Answer: A
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 41:
+What is the primary purpose of project quality management in project management?
+A. To ensure functional requirements are met and to maintain the overall quality of the project deliverables.
+B. To minimize project costs by reducing the scope of work.
+C. To create an effective marketing strategy for the project outputs.
+D. To enhance communication and collaboration among team members.
+E. 
+Answer: A
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 42:
+Which of the following activities is NOT typically part of the Project Life Cycle's "Execution" phase?
+A. Team management and coordination
+B. Project scope definition
+C. Deliverable creation
+D. Communication with stakeholders
+E. 
+Answer: B
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 43:
+Why is it typically more expensive to make changes later in the Project Life Cycle?
+A. Because changes require fewer resources in the later stages.
+B. Because more project resources have already been committed, and changes may require rework and additional resources.
+C. Because stakeholder influence is highest at the end of the project.
+D. Because the Execution phase has the highest staffing levels.
+E. 
+Answer: B
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 44:
+The project life cycle is comprised of which of the following?
+A. Activities
+B. Estimates
+C. Milestones
+D. Phases
+E. 
+Answer: D
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 45:
+Quality planning is the process of developing a quality plan for
+A. customers
+B. project manager
+C. project
+D. team
+E. 
+Answer: C
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 46:
+What is the primary goal of project scope management in project management?
+A. To expand the project's goals to increase its overall value.
+B. To ensure that all the work required (and only the required work) is included in the project.
+C. To eliminate any unnecessary tasks from the project schedule.
+D. To enhance team collaboration and communication throughout the project.
+E. 
+Answer: B
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 47:
+In which phase of the Project Life Cycle are the project's goals and objectives formally approved?
+A. Planning
+B. Execution
+C. Closure
+D. Initiation
+E. 
+Answer: D
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 48:
+Why is the degree of influence highest at the beginning of a Project Life Cycle?
+A. Because project decisions made early have a greater impact on cost and project scope.
+B. Because stakeholders become less interested in the project over time.
+C. Because the project requires minimal resources at the start.
+D. Because the execution phase has not yet begun.
+E. 
+Answer: A
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 49:
+During which phase of the Project Life Cycle is the level of effort typically the highest?
+A. Initiation
+B. Planning
+C. Execution
+D. Closure
+E. 
+Answer: C
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 50:
+Which phase of the project life cycle involves creating a detailed roadmap, allocating resources, and scheduling activities?
+A. Monitoring and Control
+B. Planning
+C. Execution
+D. Closure
+E. 
+Answer: B
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 51:
+In which phase is the scope of the project defined?
+A. Close out
+B. Construction
+C. Initiation
+D. Procurement
+E. 
+Answer: C
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 52:
+There are four methods of government procurement. Which is not one of these methods?
+A. Negotiated Tendering
+B. Two-stage Bidding
+C. Competitive proposals
+D. Acquisition
+E. 
+Answer: D
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 53:
+Why is it important to understand your Stakeholders (أصحاب المصلحة)?
+A. They can be a positive or negative influence on the project
+B. They may have different technical backgrounds
+C. They may not care about the project
+D. They may work in a different department or company
+E. 
+Answer: A
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 54:
+project intergration management, scope, time, cost, quality, human resource, commmunications, risk and procurrent management
+A. manager
+B. program
+C. project management knowledge areas
+D. project management professional (PMP)
+E. 
+Answer: C
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 55:
+What is a stakeholder in the context of project management?
+A. An individual, group, or organization who may affect or be affected by, or perceive itself to be affected by a decision, activity, or outcome of a project.
+B. A person who is responsible for overseeing project tasks and team members.
+C. A financial contributor who invests in the project without any decision-making authority.
+D. An external consultant hired to evaluate project performance after completion.
+E. 
+Answer: A
+
+Section: Quiz 2 | Fall 2026 - 2027
+Question 56:
+The DBB is project delivery system that enables site work to begin before all plans and specifications are worked out..
+A. TRUE
+B. FALSE
+C. 
+D. 
+E. 
+Answer: B
+
+Section: Quiz 3 | Fall 2026 - 2027
+Question 57:
+How does the degree of influence of stakeholders typically change over the course of a Project Life Cycle?
+A. It is lowest at the beginning and increases over time.
+B. It is highest at the beginning and decreases as the project progresses.
+C. It increases sharply during the Closure phase.
+D. It remains constant throughout all phases.
+E. 
+Answer: B
+
+Section: Quiz 3 | Fall 2026 - 2027
+Question 58:
+What is the primary role of the Project Management Institute (PMI) as an international professional society?
+A. To provide entertainment and networking events for project managers.
+B. To set industry standards, offer certifications, and promote the advancement of project management practices worldwide.
+C. To conduct academic research on business management theories.
+D. To fund large-scale construction projects across different countries.
+E. 
+Answer: B
+
+Section: Quiz 3 | Fall 2026 - 2027
+Question 59:
+How does the level of effort generally change throughout the phases of a typical Project Life Cycle?
+A. It remains constant throughout all phases.
+B. It starts high, decreases in the middle, and increases at the end.
+C. It starts Iow, increases through the middle phases, and then decreases towards the end.
+D. It starts high and decreases linearly over time.
+E. 
+Answer: C
+
+Section: Quiz 3 | Fall 2026 - 2027
+Question 60:
+What is the primary focus of operations management in an organization?
+A. To oversee temporary projects and ensure they are completed on time and within budget.
+B. To manage the day-to-day operations that are ongoing and repetitive, aiming to ensure efficiency and effectiveness in producing goods or providing services.
+C. To develop strategic plans for future projects and programs.
+D. To create marketing strategies that enhance product visibility in the market.
+E. 
+Answer: B
+
+Section: Quiz 3 | Fall 2026 - 2027
+Question 61:
+What does the phrase "Achieving high quality, at minimum cost, and in minimum time" primarily refer to in project management?
+A. The focus on team collaboration to enhance creativity and innovation.
+B. The goal of maximizing profit margins for stakeholders.
+C. The necessity of reducing project scope to meet deadlines.
+D. The triple constraint, which emphasizes balancing quality, cost, and time to ensure project success.
+E. 
+Answer: D
+
+Section: Quiz 3 | Fall 2026 - 2027
+Question 62:
+Which of the following best describes the primary areas of project management?
+A. Initiating, planning, executing, monitoring and controlling, and closing projects to ensure comprehensive management.
+B. Only planning and execution, focusing solely on completing tasks on time.
+C. Marketing, finance, and human resources as essential project management areas.
+D. Resource allocation, budgeting, and risk assessment as the only crucial components.
+E. 
+Answer: A
+
+Section: Quiz 3 | Fall 2026 - 2027
+Question 63:
+Which of the following best describes a WBS?
+A. A hierarchical decomposition of project work
+B. A list of all team member responsibilities
+C. A tool for creating a detailed project budget
+D. A visual representation of stakeholder relationships
+E. 
+Answer: A
+
+Section: Quiz 3 | Fall 2026 - 2027
+Question 64:
+What best describes a project in project management?
+A. An ongoing operation that requires minimal planning and can evolve over time without specific goals.
+B. A strategic initiative that involves collaboration among various departments without any defined end date.
+C. A permanent and repetitive process aimed at improving existing products or services.
+D. A temporary, unique effort undertaken to achieve a specific goal, focusing on delivering specific outcomes or outputs within defined constraints of time, cost, and scope.
+E. 
+Answer: D
+
+Section: Quiz 3 | Fall 2026 - 2027
+Question 65:
+Why does the level of effort decrease in the Closure phase of a Project Life Cycle?
+A. Because the project planning is finalized in this phase.
+B. Because most of the project work and deliverables are completed in the Execution phase.
+C. Because the project scope is expanded at this stage.
+D. Because new resources are usually added during this phase.
+E. 
+Answer: B
+
+Section: Quiz 3 | Fall 2026 - 2027
+Question 66:
+Which of the following statements is NOT true about projects?
+A. Projects have defined start and finish times.
+B. Projects are unique and have high variability.
+C. Projects involve planned and structured resource allocation.
+D. Projects require an excessive amount of resources without limitations.
+E. 
+Answer: D
+
+Section: Quiz 3 | Fall 2026 - 2027
+Question 67:
+What is the best definition of project management?
+A. The process of tracking project budgets and resources.
+B. The use of advanced software to manage project timelines.
+C. The management of a team to meet company goals and objectives.
+D. The application of knowledge, skills, tools, and techniques to project activities in order to meet project requirements.
+E. 
+Answer: D
+
+Section: Quiz 3 | Fall 2026 - 2027
+Question 68:
+What is the primary purpose of a Work Breakdown Structure (WBS)?
+A. To assign team roles
+B. To break down a project into smaller, manageable tasks
+C. To allocate resources
+D. To define the project budget
+E. 
+Answer: B
+
+Section: Quiz 3 | Fall 2026 - 2027
+Question 69:
+Which of the following best defines a "project"?
+A. An endeavor that does not produce a unique output but follows a standard routine.
+B. A temporary endeavor with a defined start and end, aimed at creating a unique product or service.
+C. A continuous, repetitive task designed to maintain ongoing operations.
+D. A permanent assignment focused on achieving long-term stability.
+E. 
+Answer: B
+
+Section: Quiz 3 | Fall 2026 - 2027
+Question 70:
+In which Project Life Cycle phase is the majority of the work done to deliver the product or service?
+A. Execution
+B. Initiation
+C. Monitoring and Controlling
+D. Closure
+E. 
+Answer: A
+
+Section: Quiz 3 | Fall 2026 - 2027
+Question 71:
+How do projects and operations interact within an organization?
+A. Projects are temporary and unique efforts that may initiate changes or improvements in ongoing operations, which continue after the project is completed.
+B. Projects manage day-to-day tasks, while operations handle long-term strategic planning.
+C. Operations require constant project management oversight, as they cannot function independently.
+D. Projects are ongoing and repetitive, while operations are temporary and unique.
+E. 
+Answer: A
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 72:
+What is the primary focus of functional organizations?
+A. Specialization and efficiency
+B. Project needs
+C. Collaboration between teams
+D. Balancing competing priorities
+E. 
+Answer: A
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 73:
+Which role in a RACI chart is ultimately answerable for the completion and success of a task or project?
+A. Consulted
+B. Informed
+C. Responsible
+D. Accountable
+E. 
+Answer: D
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 74:
+Which of the following is an advantage of a matrix organizational structure?
+A. Resources are not managed efficiently, leading to higher costs.
+B. It results in inefficient communication and a lack of focus on project objectives.
+C. Matrix structure ensures efficient use of resources, improved communication, and better focus on project objectives.
+D. It eliminates the need for project managers and functional managers to collaborate
+E. 
+Answer: C
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 75:
+What is the purpose of the 8/80 rule in Work Breakdown Structure (WBS) planning?
+A. To ensure that tasks are between 8 hours and 80 hours in duration.
+B. To allow tasks to exceed 80 hours and remain undetermined.
+C. To eliminate the need for defining task durations in a WBS.
+D. To create work packages that are dependent on one another for task completion
+E. 
+Answer: A
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 76:
+Which of the following is a benefit of using a Gantt chart in project management?
+A. It is difficult to update and requires complex software.
+B. It is easy to read and update, making it a good communication tool for project progress.
+C. It provides detailed financial breakdowns of the project.
+D. It focuses on the project risks and uncertainties, ignoring tasks and timelines
+E. 
+Answer: B
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 77:
+Functional organizations are most effective for projects that require:
+A. A high level of cross-departmental collaboration
+B. Specialized expertise and efficiency
+C. Flexible resource allocation
+D. Rapid response to changing project needs
+E. 
+Answer: B
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 78:
+A Gantt chart is used for the following project schedule: Task X: Duration of 4 days, starts on April 10th. Task Z: Duration of 3 days, starts after Task Y completes. If Task X starts on April 10th, when will Task Z be completed?
+A. April 22nd
+B. April 23rd
+C. April 24th
+D. April 25th
+E. 
+Answer: B
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 79:
+What is a limitation of using Gantt charts for managing projects?
+A. They can only be used for small projects with minimal tasks.
+B. They do not show task dependencies or the impact of delays between activities.
+C. They automatically update based on changes in project timelines.
+D. They provide too much detail, making them difficult to interpret
+E. 
+Answer: B
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 80:
+One advantage of matrix organizations is greater:
+A. Bureaucracy
+B. Collaboration
+C. Efficiency in specialization
+D. Hierarchical stability
+E. 
+Answer: B
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 81:
+What is one advantage of a projectized organizational structure?
+A. Project managers have limited career progression opportunities.
+B. There is more effective communication within the project team, leading to increased commitment and no waste of staff workload.
+C. Team members work across multiple projects, which reduces their specialization in a specific area.
+D. New team members are selected based on general skills, rather than specialized knowledge or experience
+E. 
+Answer: B
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 82:
+What is a potential downside of matrix organizations?
+A. Lack of specialization
+B. Inefficient use of resources
+C. Conflicting priorities
+D. Limited communication
+E. 
+Answer: C
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 83:
+How does the cost generally behave throughout the Project Life Cycle?
+A. Cost remains constant from initiation to closure.
+B. Cost is typically low in the early phases, rises during execution, and decreases towards closure.
+C. Cost is highest during the planning phase and decreases as the project progresses.
+D. Cost is highest at the initiation phase and decreases throughout
+E. 
+Answer: B
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 84:
+What is a disadvantage of a projectized organizational structure?
+A. Team members often have long-term job security due to ongoing projects.
+B. The organization does not need to duplicate resources for each project.
+C. After project completion, teams are dispersed, leading to a lack of long-term goals and job security for workers.
+D. The project manager has to report to multiple supervisors, which increases authority conflicts
+E. 
+Answer: C
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 85:
+Which type of organizational structure aims to balance specialization with project needs?
+A. Functional organization
+B. Matrix organization
+C. Hierarchical organization
+D. Network organization
+E. 
+Answer: B
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 86:
+Which of the following is a disadvantage of using Gantt charts in project management?
+A. They provide a clear view of the project’s scope and budget.
+B. They do not show clear dependencies or interrelationships between activities and cannot evaluate the impact of delays.
+C. They allow for detailed risk analysis and management.
+D. They are only useful for scheduling project tasks and do not provide any tracking of progress
+E. 
+Answer: B
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 87:
+What is the primary function of a Gantt chart in project management?
+A. To display the project's budget and resource allocation.
+B. To relate a list of activities to a time scale using bar charts, with the start and end dates of activities.
+C. To track individual team members’ performance.
+D. To outline the project’s deliverables and milestones without a time frame
+E. 
+Answer: B
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 88:
+In a RACI chart, who provides input or advice but does not perform the task directly?
+A. Responsible
+B. Consulted
+C. Informed
+D. Accountable
+E. 
+Answer: B
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 89:
+What is a primary responsibility of a Project Manager in an organization?
+A. Managing the entire organization’s financial budget.
+B. Leading a project from inception through completion, ensuring it meets objectives on time, within scope, and on budget.
+C. Overseeing only the planning phase of a project, then handing it off to other teams.
+D. Setting organizational goals and strategies across all departments
+E. 
+Answer: B
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 90:
+What is the primary focus of the Scope Management Process in project management?
+A. Ensuring all potential tasks are included, regardless of stakeholder requirements.
+B. Defining and controlling what is included and not included in a project to meet stakeholders' requirements.
+C. Managing only the financial aspects of the project.
+D. Overseeing the assignment of team members to specific project roles
+E. 
+Answer: B
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 91:
+A project manager schedules the following tasks on a Gantt chart: Task 1: Duration of 10 days, starts on June 1st. Task 2: Duration of 6 days, starts after Task 1 finishes. Task 3: Duration of 4 days, starts after Task 2 finishes. Task 4: Duration of 7 da
+A. 25 days
+B. 26 days
+C. 27 days
+D. 28 days
+E. 
+Answer: C
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 92:
+What is the primary function of a Project Management Office (PMO) within an organization?
+A. To centralize and execute project-related governance, standardize processes, and facilitate the sharing of resources, methodologies, tools, and techniques.
+B. To take full responsibility for completing all projects independently without involving other teams.
+C. To focus solely on managing financial resources for all projects in an organization.
+D. To handle only technical aspects of project management and leave administrative tasks to other departments
+E. 
+Answer: A
+
+Section: Quiz 4 | Fall 2026 - 2027
+Question 93:
+What is the primary purpose of a RACI chart in project management?
+A. To allocate project resources efficiently
+B. To monitor and control project risks
+C. To define team roles and responsibilities clearly
+D. To establish the project budget
+E. 
+Answer: C
+
+Section: Quiz 5 | Fall 2026 - 2027
+Question 94:
+Work Breakdown Structure (WBS)
+A. A hierarchical listing of what must be done during a project
+B. Assumption that path duration times are independent of each other
+C. The length of time required under the worst conditions
+D. Time estimates that allow for variation
+E. 
+Answer: A
+
+Section: Quiz 5 | Fall 2026 - 2027
+Question 95:
+Work Breakdown Structure is a useful tool in project management because it addresses the timing of individual work elements.
+A. TRUE
+B. FALSE
+C. 
+D. 
+E. 
+Answer: B
+
+Section: Quiz 5 | Fall 2026 - 2027
+Question 96:
+The lowest element in the hierarchical breakdown of the WBS is
+A. A cost account
+B. A deliverable
+C. A work package
+D. A lowest sub deliverable
+E. 
+Answer: C
+
+Section: Quiz 5 | Fall 2026 - 2027
+Question 97:
+Finish-to-Start (FF)
+A. An activity must finish before the next activity can finish.
+B. Crashing
+C. Define Activities
+D. Monte Carlo Analysis
+E. 
+Answer: A
+
+Section: Quiz 5 | Fall 2026 - 2027
+Question 98:
+The amount of time that a task or activity should take to finish.
+A. Tasks
+B. Timescales
+C. Activities
+D. Durations
+E. 
+Answer: D
+
+Section: Quiz 5 | Fall 2026 - 2027
+Question 99:
+Resources refers to
+A. Manpower
+B. Machinery
+C. Materials
+D. All of the given
+E. 
+Answer: D
+
+Section: Quiz 5 | Fall 2026 - 2027
+Question 100:
+The ES of an activity that has only one predecessor is simply the EF of that predecessor
+A. TRUE
+B. FALSE
+C. 
+D. 
+E. 
+Answer: A
+
+Section: Quiz 5 | Fall 2026 - 2027
+Question 101:
+WBS
+A. Work Break Sector
+B. Work Brown Structure
+C. Word Break Structure
+D. Work Breakdown Structure
+E. 
+Answer: D
+
+Section: Quiz 5 | Fall 2026 - 2027
+Question 102:
+An activity must start before the next activity can start.
+A. Start-to-Start (SS)
+B. The amount of time a project can be delayed without delaying the externally imposed project completion date required by the customer or management
+C. The most common method to use to draw network diagrams
+D. or previously committed to by the project manager.
+E. 
+Answer: A
+
+Section: Quiz 5 | Fall 2026 - 2027
+Question 103:
+What are the steps in managing a project.
+A. None of the given options
+B. A problem scheduled for solution.
+C. Define the problem and develop solution options
+D. plan the project
+E. 
+Answer: A
+
+Section: Quiz 5 | Fall 2026 - 2027
+Question 104:
+What is 4M of construction?
+A. 4 types of construction managers
+B. 4 types of organizations
+C. 4 resources for construction
+D. 4 types of projects
+E. 
+Answer: C
+
+Section: Quiz 5 | Fall 2026 - 2027
+Question 105:
+Finish-to-start
+A. The acquisition and deployment of the internal and external resources required to deliver the project
+B. A collection of techniques used to develop and present schedules that show when work will be performed.
+C. A dependency in an activity-on-node network. It indicates that one activity cannot start until another activity has finished.
+D. A collection of techniques used to calculate the resources required to deliver the work and when they will be required.
+E. 
+Answer: C
+
+Section: Quiz 5 | Fall 2026 - 2027
+Question 106:
+Start-to-Finish (SF)
+A. Project Float
+B. No; you would compress the schedule
+C. Critical Path
+D. An activity must start before the successor can finish.
+E. 
+Answer: D
+
+Section: Quiz 5 | Fall 2026 - 2027
+Question 107:
+Finish-to-finish
+A. A scheduling calculation that delays activities such that resource usage is kept below specified limits. It is also known as resource limited scheduling.
+B. The process by which resources are attributed to activities.
+C. The process of developing
+D. A dependency in an activity-on-node network. It indicates that one activity cannot finish until another activity has finished.
+E. 
+Answer: D
+
+Section: Quiz 5 | Fall 2026 - 2027
+Question 108:
+Activities
+A. The most probable length of time required
+B. Project steps that consume resources and/or time
+C. Time estimates that allow for variation
+D. A person who promotes and supports a project
+E. 
+Answer: B
+
+
+`;
+
+/* =====================================================================
+   APP LOGIC — you should not need to edit anything below this line.
+===================================================================== */
+(function(){
+
+  const STORAGE_THEME_KEY = "quizbot-theme";
+  const STORAGE_SESSION_KEY = "quizbot-session";
+
+  /* ---------------- Parsing & validation ---------------- */
+  const QUESTION_HEADER_RE = /^Question\s*\d+\s*:?\s*$/i;
+  const SECTION_LINE_RE = /^Section\s*:\s*(.+?)\s*$/i;
+  const OPTION_LINE_RE = /^([A-Za-z])[\.\)]\s*(.*)$/;
+  const ANSWER_LINE_RE = /^Answer\s*:\s*([A-Za-z])\s*$/i;
+
+  function parseQuestionBankText(text){
+    const lines = String(text || "").split(/\r?\n/);
+    const blocks = [];
+    let current = null;
+    let currentSection = "General";
+
+    for(const rawLine of lines){
+      const line = rawLine.trim();
+      if(!line) continue;
+
+      const sectionMatch = line.match(SECTION_LINE_RE);
+      if(sectionMatch){
+        currentSection = sectionMatch[1].trim();
+        continue;
+      }
+
+      if(QUESTION_HEADER_RE.test(line)){
+        if(current) blocks.push(current);
+        current = { questionLines: [], options: [], answerLetter: null, section: currentSection };
+        continue;
+      }
+      if(!current) continue; // ignore stray text before the first question header
+
+      const ansMatch = line.match(ANSWER_LINE_RE);
+      if(ansMatch){
+        current.answerLetter = ansMatch[1].toUpperCase();
+        continue;
+      }
+      const optMatch = line.match(OPTION_LINE_RE);
+      if(optMatch){
+        const letter = optMatch[1].toUpperCase();
+        const optText = optMatch[2].trim();
+        if(optText.length > 0){
+          current.options.push({ letter, text: optText });
+        }
+        // an option line with no text after the letter is silently skipped
+        continue;
+      }
+      // otherwise treat this as (a continuation of) the question text,
+      // but only before any options have started
+      if(current.options.length === 0 && current.answerLetter === null){
+        current.questionLines.push(line);
+      }
+    }
+    if(current) blocks.push(current);
+    return blocks;
+  }
+
+  function normalizeParsedQuestion(block, idx){
+    try{
+      const questionText = block.questionLines.join(" ").trim();
+      if(!questionText){
+        console.warn(`[QuizBot] Question #${idx+1} skipped: missing question text.`);
+        return null;
+      }
+      if(block.options.length < 2){
+        console.warn(`[QuizBot] Question #${idx+1} skipped: fewer than 2 usable options.`);
+        return null;
+      }
+      if(!block.answerLetter){
+        console.warn(`[QuizBot] Question #${idx+1} skipped: missing "Answer:" line.`);
+        return null;
+      }
+      const correctIndex = block.options.findIndex(o=>o.letter===block.answerLetter);
+      if(correctIndex === -1){
+        console.warn(`[QuizBot] Question #${idx+1} skipped: answer letter "${block.answerLetter}" does not match any option.`);
+        return null;
+      }
+      return {
+        id: idx,
+        section: block.section || "General",
+        question: questionText,
+        options: block.options.map(o=>o.text),
+        correctIndex
+      };
+    }catch(e){
+      console.warn(`[QuizBot] Question #${idx+1} skipped due to an error:`, e);
+      return null;
+    }
+  }
+
+  const VALID_QUESTIONS = parseQuestionBankText(QUESTION_BANK_TEXT)
+    .map(normalizeParsedQuestion)
+    .filter(Boolean);
+
+  /* ---------------- Helpers ---------------- */
+  function shuffleArray(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  function letterFor(i){ return String.fromCharCode(65+i); }
+
+  function fmtTime(totalSeconds){
+    const m = Math.floor(totalSeconds/60);
+    const s = totalSeconds%60;
+    return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  }
+
+  function escapeHtml(str){
+    return String(str)
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+  }
+
+  /* ---------------- Branding ---------------- */
+  function applyBranding(){
+    document.title = SITE_CONFIG.siteName;
+    document.getElementById("brandName").textContent = SITE_CONFIG.siteName;
+    document.getElementById("homeTitle").textContent = SITE_CONFIG.homeTitle;
+    document.getElementById("homeSubtitle").textContent = SITE_CONFIG.homeSubtitle;
+    document.getElementById("footerAuthor").textContent = SITE_CONFIG.authorName;
+    document.getElementById("footerTitle").textContent = SITE_CONFIG.authorTitle;
+
+    const logoEl = document.getElementById("brandLogo");
+    if(SITE_CONFIG.logoImageUrl && SITE_CONFIG.logoImageUrl.trim()){
+      logoEl.innerHTML = `<img src="${escapeHtml(SITE_CONFIG.logoImageUrl)}" alt="logo">`;
+    } else {
+      logoEl.textContent = SITE_CONFIG.logoText || "Q";
+    }
+  }
+
+  /* ---------------- Theme ---------------- */
+  const sunIcon = `<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>`;
+  const moonIcon = `<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>`;
+
+  function setTheme(theme){
+    document.documentElement.setAttribute("data-theme", theme);
+    document.getElementById("themeIcon").innerHTML = theme === "dark" ? sunIcon : moonIcon;
+    try{ localStorage.setItem(STORAGE_THEME_KEY, theme); }catch(e){}
+  }
+  function initTheme(){
+    let saved = null;
+    try{ saved = localStorage.getItem(STORAGE_THEME_KEY); }catch(e){}
+    setTheme(saved === "dark" || saved === "light" ? saved : (SITE_CONFIG.defaultTheme === "dark" ? "dark" : "light"));
+  }
+  document.getElementById("themeToggle").addEventListener("click", ()=>{
+    const cur = document.documentElement.getAttribute("data-theme");
+    setTheme(cur === "dark" ? "light" : "dark");
+  });
+
+  /* ---------------- Screen management ---------------- */
+  function showScreen(id){
+    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    window.scrollTo({top:0, behavior:"instant" in window ? "instant" : "auto"});
+  }
+
+  /* ---------------- Home screen state ---------------- */
+  let selectedSections = new Set(["__FULL__"]);
+  let selectedTimerMinutes = SITE_CONFIG.defaultTimerMinutes; // number, 0 = none
+
+  const SECTION_NAMES = [...new Set(VALID_QUESTIONS.map(q => q.section || "General"))];
+
+  function buildSectionChips(){
+    const wrap = document.getElementById("sectionChips");
+    wrap.innerHTML = "";
+    const chips = [{label:"Full Bank", value:"__FULL__"}, ...SECTION_NAMES.map(name=>({label:name, value:name}))];
+    chips.forEach(c=>{
+      const el = document.createElement("div");
+      el.className = "chip" + (selectedSections.has(c.value) ? " active":"");
+      el.textContent = c.label;
+      el.addEventListener("click", ()=>{
+        if(c.value === "__FULL__"){
+          selectedSections.clear();
+          selectedSections.add("__FULL__");
+        }else{
+          selectedSections.delete("__FULL__");
+          if(selectedSections.has(c.value)) selectedSections.delete(c.value);
+          else selectedSections.add(c.value);
+          if(selectedSections.size === 0) selectedSections.add("__FULL__");
+        }
+        buildSectionChips();
+        updateSectionHint();
+        renderBankList();
+      });
+      wrap.appendChild(el);
+    });
+  }
+
+  function updateSectionHint(){
+    const hint = document.getElementById("sectionHint");
+    if(selectedSections.has("__FULL__")) hint.textContent = `Full Bank selected — ${VALID_QUESTIONS.length} questions available.`;
+    else {
+      const count = VALID_QUESTIONS.filter(q=>selectedSections.has(q.section || "General")).length;
+      hint.textContent = `${selectedSections.size} section${selectedSections.size===1?"":"s"} selected — ${count} question${count===1?"":"s"} available.`;
+    }
+  }
+
+  function buildTimerChips(){
+    const wrap = document.getElementById("timerChips");
+    wrap.innerHTML = "";
+    SITE_CONFIG.timerOptionsMinutes.forEach(min=>{
+      const el = document.createElement("div");
+      el.className = "chip" + (selectedTimerMinutes===min ? " active":"");
+      el.textContent = min===0 ? "No Timer" : (min+" Min");
+      el.addEventListener("click", ()=>{
+        selectedTimerMinutes = min;
+        buildTimerChips();
+      });
+      wrap.appendChild(el);
+    });
+  }
+
+  function updateBankStat(){
+    document.getElementById("bankStat").textContent =
+      VALID_QUESTIONS.length + (VALID_QUESTIONS.length===1 ? " question loaded" : " questions loaded");
+  }
+
+  /* ---------------- Bank review list (with search) ---------------- */
+  const searchInput = document.getElementById("searchInput");
+  const searchResults = document.getElementById("searchResults");
+  const BANK_LIST_LIMIT = 300;
+
+  function renderBankList(){
+    const q = searchInput.value.trim().toLowerCase();
+    const sectionQuestions = selectedSections.has("__FULL__")
+      ? VALID_QUESTIONS
+      : VALID_QUESTIONS.filter(item=>selectedSections.has(item.section || "General"));
+    const matches = q
+      ? sectionQuestions.filter(item=>item.question.toLowerCase().includes(q))
+      : sectionQuestions;
+    searchResults.innerHTML = "";
+
+    if(matches.length === 0){
+      searchResults.innerHTML = `<div class="search-empty">No matching questions found.</div>`;
+    } else {
+      const capped = matches.slice(0, BANK_LIST_LIMIT);
+      capped.forEach((item, index)=>{
+        const box = document.createElement("div");
+        box.className = "bank-item";
+
+        const header = document.createElement("div");
+        header.className = "bank-item-header";
+        const number = document.createElement("span");
+        number.className = "question-number";
+        number.textContent = String(index + 1);
+        number.setAttribute("aria-label", `Question ${index + 1}`);
+        const questionLabel = document.createElement("span");
+        questionLabel.className = "bank-item-text";
+        questionLabel.innerHTML = `<small style="display:block;opacity:.65;margin-bottom:3px;">${escapeHtml(item.section || "General")}</small>${escapeHtml(item.question)}`;
+        header.appendChild(number);
+        header.appendChild(questionLabel);
+
+        const optsWrap = document.createElement("div");
+        optsWrap.className = "options-list";
+        item.options.forEach((opt, oi)=>{
+          const optDiv = document.createElement("div");
+          optDiv.className = "option-btn" + (oi===item.correctIndex ? " review-option correct" : "");
+          optDiv.innerHTML = `<span class="letter">${letterFor(oi)}</span><span>${escapeHtml(opt)}</span>` +
+            (oi===item.correctIndex ? `<span class="review-tag correct">Correct</span>` : "");
+          optsWrap.appendChild(optDiv);
+        });
+
+        box.appendChild(header);
+        box.appendChild(optsWrap);
+        searchResults.appendChild(box);
+      });
+      if(matches.length > BANK_LIST_LIMIT){
+        const note = document.createElement("div");
+        note.className = "hint";
+        note.style.textAlign = "center";
+        note.textContent = `Showing first ${BANK_LIST_LIMIT} of ${matches.length} matches — refine your search to see more.`;
+        searchResults.appendChild(note);
+      }
+    }
+  }
+  searchInput.addEventListener("input", renderBankList);
+
+  /* ---------------- Toggles ---------------- */
+  const toggleShuffleQ = document.getElementById("toggleShuffleQ");
+  const toggleShuffleA = document.getElementById("toggleShuffleA");
+  toggleShuffleQ.checked = SITE_CONFIG.defaultShuffleQuestions;
+  toggleShuffleA.checked = SITE_CONFIG.defaultShuffleAnswers;
+
+  /* ---------------- Session (quiz state) ---------------- */
+  let session = null;
+  /*
+    session = {
+      questions: [{id, question, options, correctIndex}, ...],
+      answers: { [index]: chosenOptionIndex },
+      current: 0,
+      timerTotalSeconds: number or null,
+      timeRemaining: number or null,
+      startedAt: timestamp,
+      finished: bool
+    }
+  */
+  let timerHandle = null;
+
+  function persistSession(){
+    if(!session) return;
+    try{ localStorage.setItem(STORAGE_SESSION_KEY, JSON.stringify(session)); }catch(e){}
+  }
+  function clearPersistedSession(){
+    try{ localStorage.removeItem(STORAGE_SESSION_KEY); }catch(e){}
+  }
+  function loadPersistedSession(){
+    try{
+      const raw = localStorage.getItem(STORAGE_SESSION_KEY);
+      if(!raw) return null;
+      const parsed = JSON.parse(raw);
+      if(parsed && Array.isArray(parsed.questions) && parsed.questions.length>0 && !parsed.finished){
+        return parsed;
+      }
+    }catch(e){}
+    return null;
+  }
+
+  function checkResumeAvailable(){
+    const prev = loadPersistedSession();
+    if(prev){
+      document.getElementById("resumeBanner").style.display = "block";
+      document.getElementById("btnResume").onclick = ()=>{
+        session = prev;
+        enterQuizScreen();
+      };
+      document.getElementById("btnDiscardResume").onclick = ()=>{
+        clearPersistedSession();
+        document.getElementById("resumeBanner").style.display = "none";
+      };
+    } else {
+      document.getElementById("resumeBanner").style.display = "none";
+    }
+  }
+
+  function buildSessionQuestions(){
+    let pool;
+
+    if(selectedSections.has("__FULL__")){
+      pool = VALID_QUESTIONS.slice();
+    }else{
+      pool = VALID_QUESTIONS.filter(q=>selectedSections.has(q.section || "General"));
+    }
+
+    if(toggleShuffleQ.checked) pool = shuffleArray(pool);
+
+    // Deep-copy + optionally shuffle answers, preserving correctness
+    return pool.map(q=>{
+      let options = q.options.slice();
+      let correctIndex = q.correctIndex;
+      if(toggleShuffleA.checked){
+        const order = shuffleArray(options.map((_,i)=>i)); // new order of original indices
+        const newOptions = order.map(i=>options[i]);
+        const newCorrect = order.indexOf(q.correctIndex);
+        options = newOptions;
+        correctIndex = newCorrect;
+      }
+      return { id:q.id, question:q.question, options, correctIndex };
+    });
+  }
+
+  document.getElementById("btnStart").addEventListener("click", ()=>{
+    if(VALID_QUESTIONS.length===0){
+      alert("The question bank is empty. Add questions to QUESTION_BANK_TEXT in the code first.");
+      return;
+    }
+    const questions = buildSessionQuestions();
+    if(questions.length===0){
+      alert("No questions available to start a quiz. Try clearing your selection.");
+      return;
+    }
+    let timerTotalSeconds = null;
+    if(selectedTimerMinutes && selectedTimerMinutes>0){
+      timerTotalSeconds = Math.round(selectedTimerMinutes*60);
+    }
+    session = {
+      questions,
+      answers: {},
+      current: 0,
+      timerTotalSeconds,
+      timeRemaining: timerTotalSeconds,
+      startedAt: Date.now(),
+      finished: false
+    };
+    persistSession();
+    enterQuizScreen();
+  });
+
+  /* ---------------- Quiz screen rendering ---------------- */
+  function enterQuizScreen(){
+    showScreen("screen-quiz");
+    startTimerIfNeeded();
+    renderQuestion();
+  }
+
+  function startTimerIfNeeded(){
+    if(timerHandle){ clearInterval(timerHandle); timerHandle = null; }
+    const pill = document.getElementById("timerPill");
+    if(session.timerTotalSeconds === null || session.timerTotalSeconds === undefined){
+      pill.style.display = "none";
+      return;
+    }
+    pill.style.display = "flex";
+    updateTimerDisplay();
+    timerHandle = setInterval(()=>{
+      if(!session || session.finished){ clearInterval(timerHandle); return; }
+      session.timeRemaining = Math.max(0, (session.timeRemaining||0) - 1);
+      updateTimerDisplay();
+      persistSession();
+      if(session.timeRemaining<=0){
+        clearInterval(timerHandle);
+        finishQuiz();
+      }
+    },1000);
+  }
+  function updateTimerDisplay(){
+    const el = document.getElementById("timerText");
+    const pill = document.getElementById("timerPill");
+    if(session.timeRemaining===null || session.timeRemaining===undefined) return;
+    el.textContent = fmtTime(session.timeRemaining);
+    pill.classList.toggle("low", session.timeRemaining<=60);
+  }
+
+  function renderQuestion(){
+    const q = session.questions[session.current];
+    document.getElementById("qCounter").textContent = `Question ${session.current+1} of ${session.questions.length}`;
+    document.getElementById("progressFill").style.width = (((session.current)/session.questions.length)*100)+"%";
+    document.getElementById("questionText").textContent = q.question;
+
+    const chosen = session.answers[session.current];
+    const answered = chosen !== undefined;
+
+    const list = document.getElementById("optionsList");
+    list.innerHTML = "";
+    q.options.forEach((opt, i)=>{
+      const btn = document.createElement("button");
+      btn.type = "button";
+      let cls = "option-btn";
+      if(answered){
+        if(i === q.correctIndex) cls += " review-option correct";
+        else if(i === chosen) cls += " review-option wrong";
+      }
+      btn.className = cls;
+      let tag = "";
+      if(answered && i === q.correctIndex) tag = `<span class="review-tag correct">Correct</span>`;
+      else if(answered && i === chosen) tag = `<span class="review-tag wrong">Your answer</span>`;
+      btn.innerHTML = `<span class="letter">${letterFor(i)}</span><span>${escapeHtml(opt)}</span>${tag}`;
+      if(answered){
+        btn.disabled = true;
+      } else {
+        btn.addEventListener("click", ()=>{
+          session.answers[session.current] = i;
+          persistSession();
+          renderQuestion();
+        });
+      }
+      list.appendChild(btn);
+    });
+
+    const feedback = document.getElementById("feedbackBanner");
+    if(answered){
+      const isCorrect = chosen === q.correctIndex;
+      feedback.style.display = "block";
+      feedback.className = "feedback-banner " + (isCorrect ? "correct" : "wrong");
+      feedback.textContent = isCorrect
+        ? "✓ Correct!"
+        : `✗ Incorrect — the correct answer is ${letterFor(q.correctIndex)}. ${q.options[q.correctIndex]}`;
+    } else {
+      feedback.style.display = "none";
+    }
+
+    document.getElementById("btnPrev").disabled = session.current===0;
+    const isLast = session.current === session.questions.length-1;
+    document.getElementById("btnNext").textContent = isLast ? "Finish Quiz" : "Next Question";
+
+    renderNavigator();
+  }
+
+  function renderNavigator(){
+    const nav = document.getElementById("navigator");
+    nav.innerHTML = "";
+    session.questions.forEach((_, i)=>{
+      const dot = document.createElement("div");
+      dot.className = "nav-dot" +
+        (session.answers[i]!==undefined ? " answered":"") +
+        (i===session.current ? " current":"");
+      dot.textContent = i+1;
+      dot.addEventListener("click", ()=>{
+        session.current = i;
+        renderQuestion();
+      });
+      nav.appendChild(dot);
+    });
+  }
+
+  document.getElementById("btnPrev").addEventListener("click", ()=>{
+    if(session.current>0){ session.current--; renderQuestion(); }
+  });
+  document.getElementById("btnNext").addEventListener("click", ()=>{
+    if(session.current < session.questions.length-1){
+      session.current++;
+      renderQuestion();
+    } else {
+      finishQuiz();
+    }
+  });
+
+  /* ---------------- Finish / results ---------------- */
+  function finishQuiz(){
+    if(timerHandle){ clearInterval(timerHandle); timerHandle = null; }
+    session.finished = true;
+    clearPersistedSession();
+
+    let correct=0, wrong=0, unanswered=0;
+    session.questions.forEach((q,i)=>{
+      const a = session.answers[i];
+      if(a===undefined) unanswered++;
+      else if(a===q.correctIndex) correct++;
+      else wrong++;
+    });
+    const total = session.questions.length;
+    const pct = total>0 ? Math.round((correct/total)*100) : 0;
+
+    document.getElementById("scorePct").textContent = pct+"%";
+    document.getElementById("scoreFrac").textContent = `${correct} / ${total}`;
+    document.getElementById("statCorrect").textContent = correct;
+    document.getElementById("statWrong").textContent = wrong;
+    document.getElementById("statUnanswered").textContent = unanswered;
+
+    const circumference = 2*Math.PI*74;
+    const ring = document.getElementById("ringProgress");
+    ring.setAttribute("stroke-dasharray", circumference.toFixed(2));
+    ring.setAttribute("stroke-dashoffset", (circumference*(1-pct/100)).toFixed(2));
+    ring.style.stroke = pct>=70 ? "var(--accent)" : (pct>=40 ? "var(--warn)" : "var(--danger)");
+
+    showScreen("screen-result");
+  }
+
+  document.getElementById("btnReview").addEventListener("click", renderReview);
+  document.getElementById("btnBackToResult").addEventListener("click", ()=>showScreen("screen-result"));
+
+  function renderReview(){
+    const wrap = document.getElementById("reviewList");
+    wrap.innerHTML = "";
+    session.questions.forEach((q,i)=>{
+      const userAns = session.answers[i];
+      const box = document.createElement("div");
+      box.className = "card";
+      box.style.margin = "0 0 12px 0";
+      box.style.padding = "16px";
+
+      let statusTag = "";
+      if(userAns===undefined) statusTag = `<span class="review-tag" style="color:var(--warn)">Unanswered</span>`;
+      else if(userAns===q.correctIndex) statusTag = `<span class="review-tag correct">Correct</span>`;
+      else statusTag = `<span class="review-tag wrong">Wrong</span>`;
+
+      let optionsHtml = "";
+      q.options.forEach((opt,oi)=>{
+        let cls = "option-btn review-option";
+        if(oi===q.correctIndex) cls+=" correct";
+        else if(oi===userAns) cls+=" wrong";
+        let tag = "";
+        if(oi===q.correctIndex) tag = `<span class="review-tag correct">Correct</span>`;
+        else if(oi===userAns) tag = `<span class="review-tag wrong">Your answer</span>`;
+        optionsHtml += `<div class="${cls}"><span class="letter">${letterFor(oi)}</span><span>${escapeHtml(opt)}</span>${tag}</div>`;
+      });
+
+      box.innerHTML = `
+        <div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:10px;">
+          <div style="font-weight:700;">Q${i+1}. ${escapeHtml(q.question)}</div>
+          ${statusTag}
+        </div>
+        <div class="options-list">${optionsHtml}</div>
+      `;
+      wrap.appendChild(box);
+    });
+    showScreen("screen-review");
+  }
+
+  document.getElementById("btnRetry").addEventListener("click", ()=>{
+    // Same settings, fresh attempt
+    const questions = buildSessionQuestions();
+    if(questions.length===0){ showScreen("screen-home"); return; }
+    session = {
+      questions,
+      answers: {},
+      current: 0,
+      timerTotalSeconds: session.timerTotalSeconds,
+      timeRemaining: session.timerTotalSeconds,
+      startedAt: Date.now(),
+      finished: false
+    };
+    persistSession();
+    enterQuizScreen();
+  });
+
+  document.getElementById("btnHome").addEventListener("click", ()=>{
+    clearPersistedSession();
+    checkResumeAvailable();
+    showScreen("screen-home");
+  });
+
+  /* Warn before leaving mid-quiz */
+  window.addEventListener("beforeunload", (e)=>{
+    if(session && !session.finished && document.getElementById("screen-quiz").classList.contains("active")){
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  });
+
+  /* ---------------- Init ---------------- */
+  applyBranding();
+  initTheme();
+  updateBankStat();
+  buildSectionChips();
+  updateSectionHint();
+  buildTimerChips();
+  renderBankList();
+  checkResumeAvailable();
+
+})();
+</script>
+</body>
+</html>
